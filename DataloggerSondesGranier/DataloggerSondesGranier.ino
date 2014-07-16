@@ -55,22 +55,32 @@ void setup()
 
 void loop()
 {
-  value = analogRead(analogPin);
+  
+  value = 0;
+  
+  // Moyenne sur 10 échantillons:
+  for (int i=0; i<10; i++) {
+    value += analogRead(analogPin);
+    // Délai de 1 seconde avant la prochaine acquisition:
+    delay(1000);
+  }
+  value /= 10;
+  
   dataString = String(value);
-
-  // open the file. note that only one file can be open at a time,
-  // so you have to close this one before opening another.
+  
+  // Ouverture du fichier. Un seul fichier peut être ouvert à la fois,
+  // il faut fermer celui-ci avant d'en ouvrir un autre.
   File dataFile = SD.open("datalog.txt", FILE_WRITE);
 
-  // if the file is available, write to it:
+  // Écrire dans le fichier si il est disponible:
   if (dataFile) {
     dataFile.println(dataString);
     dataFile.close();
     
-    // print to the serial port too:
+    // Écrire aussi sur le port série:
     Serial.println(dataString);
   }  
-  // if the file isn't open, pop up an error:
+  // Si le fichier n'est pas ouvert, afficher une erreur:
   else {
     Serial.println("error opening datalog.txt");
   } 
